@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "625145310845",
+    "project_id": "letsworkapphome",
+    "storage_bucket": "letsworkapphome.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625145310845:android:3eda7e24da9591205e8b14",
+        "android_client_info": {
+          "package_name": "com.example.letsworkhomeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "625145310845-4gfveqdm08hifrv7aodo990vltj479pt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChvcXg_Zvx8k_zYlnVyGg2Wpv4539Bhoo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "625145310845-4gfveqdm08hifrv7aodo990vltj479pt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625145310845:android:c6631f0b3cdba5025e8b14",
+        "android_client_info": {
+          "package_name": "com.utng.letsworkapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "625145310845-4gfveqdm08hifrv7aodo990vltj479pt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChvcXg_Zvx8k_zYlnVyGg2Wpv4539Bhoo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "625145310845-4gfveqdm08hifrv7aodo990vltj479pt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
