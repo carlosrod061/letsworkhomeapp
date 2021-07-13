@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:letsworkhomeapp/screens/acercade_screen.dart';
@@ -10,9 +11,30 @@ import 'family_screen.dart';
 // ignore: must_be_immutable
 class GridDashboard extends StatelessWidget {
   String userNameG;
+  String familyCode;
+
   GridDashboard(String username) {
     this.userNameG = username;
+     try {
+      FirebaseFirestore.instance
+          .collection('users')
+          .where('userName', isEqualTo: username.toString())
+          .limit(1)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        if (querySnapshot.size > 0) {
+          //Verificacion de familia
+          querySnapshot.docs.forEach((doc) {
+           this.familyCode = doc["familyCode"];
+          });
+        }
+      });
+    } on FirebaseException catch (e) {
+      print("ERROR" + e.toString());
+    }
   }
+
+  
 
   DateTime currentDate = DateTime.now();
 
@@ -125,7 +147,7 @@ class GridDashboard extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          Roles(this.userNameG)));
+                                          Roles(this.userNameG,this.familyCode)));
                             }
                             break;
                           case "Acerca de":

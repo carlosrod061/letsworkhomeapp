@@ -17,6 +17,7 @@ class Family extends StatefulWidget {
 
 class _FamilyState extends State<Family> {
   bool existsFamily;
+  String sfamilyCode;
   String integrantes = "";
   var _apellidosFamilia = TextEditingController();
   var _familiaCode = TextEditingController();
@@ -54,10 +55,12 @@ class _FamilyState extends State<Family> {
             if (doc["familyCode"] == "vacio") {
               setState(() {
                 existsFamily = false;
+                sfamilyCode = doc["familyCode"];
               });
             } else {
               setState(() {
                 existsFamily = true;
+                sfamilyCode = doc["familyCode"];
               });
             }
           });
@@ -372,7 +375,7 @@ class _FamilyState extends State<Family> {
     try {
       FirebaseFirestore.instance
           .collection('users')
-          .where('familyCode', isEqualTo: "Perezf")
+          .where('familyCode', isEqualTo:sfamilyCode.toString())
           .get()
           .then((QuerySnapshot querySnapshot) {
         if (querySnapshot.size > 0) {
@@ -503,7 +506,7 @@ class _FamilyState extends State<Family> {
           SizedBox(
             height: 40,
           ),
-          chooseView(existsFamily),
+          chooseView(existsFamily)
         ],
       ),
     );
