@@ -15,7 +15,7 @@ class GridDashboard extends StatelessWidget {
 
   GridDashboard(String username) {
     this.userNameG = username;
-     try {
+    try {
       FirebaseFirestore.instance
           .collection('users')
           .where('userName', isEqualTo: username.toString())
@@ -25,7 +25,7 @@ class GridDashboard extends StatelessWidget {
         if (querySnapshot.size > 0) {
           //Verificacion de familia
           querySnapshot.docs.forEach((doc) {
-           this.familyCode = doc["familyCode"];
+            this.familyCode = doc["familyCode"];
           });
         }
       });
@@ -33,8 +33,6 @@ class GridDashboard extends StatelessWidget {
       print("ERROR" + e.toString());
     }
   }
-
-  
 
   DateTime currentDate = DateTime.now();
 
@@ -134,20 +132,34 @@ class GridDashboard extends StatelessWidget {
                             break;
                           case "Tareas":
                             {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          Tareas(this.userNameG)));
+                              if (this.familyCode == "vacio") {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                    content: Text(
+                                        "No cuentas con una familia asignada aún"),
+                                    backgroundColor: Colors.red));
+                              } else {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Tareas(
+                                            this.userNameG, this.familyCode)));
+                              }
                             }
                             break;
                           case "Roles":
                             {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          Roles(this.userNameG,this.familyCode)));
+                              if (this.familyCode == "vacio") {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                    content: Text(
+                                        "No cuentas con una familia asignada aún"),
+                                    backgroundColor: Colors.red));
+                              } else {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Roles(
+                                            this.userNameG, this.familyCode)));
+                              }
                             }
                             break;
                           case "Acerca de":

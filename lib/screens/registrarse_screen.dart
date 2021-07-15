@@ -189,7 +189,8 @@ class _RegistrarseState extends State<Registrarse> {
         'familyCode': 'vacio',
         'userFullName': fullname,
         'userName': username,
-        'userPassword': password
+        'userPassword': password,
+        'userRol': 'Vacio'
       }).then((value) => _showSnackBarExito("Registrado Satisfactoriamente"));
     } on FirebaseException catch (e) {
       _showSnackBarFallo("Error al registrarse");

@@ -233,7 +233,7 @@ class _FamilyState extends State<Family> {
           //Verificacion de familia
           querySnapshot.docs.forEach((doc) {
             actualizarUsuario(doc.id, familyCode, doc["userFullName"],
-                doc["userName"], doc["userPassword"]);
+                doc["userName"], doc["userPassword"],doc["userRol"]);
           });
         }
       });
@@ -244,7 +244,7 @@ class _FamilyState extends State<Family> {
 
   //Actualiza la familia del usuario
   actualizarUsuario(String userID, String familyCode, String userFullname,
-      String userName, String userPassword) {
+      String userName, String userPassword,String userRol) {
     try {
       //FALTAN LAS PRUEBAS PARA LAS VALIDACIONES DE QUE EL CODIGO DE LA FAMILIA SEA CORRECTO
       FirebaseFirestore.instance
@@ -260,7 +260,8 @@ class _FamilyState extends State<Family> {
             'familyCode': familyCode,
             'userFullName': userFullname,
             'userName': userName,
-            'userPassword': userPassword
+            'userPassword': userPassword,
+            'userRol':userRol
           }).then((value) =>
               _showSnackBarExito("Familia Asignada Satisfactoriamente"));
         } else {
