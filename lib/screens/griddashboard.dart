@@ -123,11 +123,18 @@ class GridDashboard extends StatelessWidget {
                             break;
                           case "Notificaciones":
                             {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          Notificaciones(this.userNameG)));
+                              if (this.familyCode == "vacio") {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                    content: Text(
+                                        "No cuentas con una familia asignada aún"),
+                                    backgroundColor: Colors.red));
+                              } else {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Notificaciones(
+                                            this.userNameG, this.familyCode)));
+                              }
                             }
                             break;
                           case "Tareas":

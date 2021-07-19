@@ -42,12 +42,35 @@ class _RolesState extends State<Roles> {
     });
   }
 
-  _showSnackBarExito(message) {
+  _showSnackBarExito(
+      message, String userName, String familyCode, String accion) {
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: Colors.green));
-        _integrantesList = [];
+    _integrantesList = [];
     Navigator.pop(context);
     loadIntegrantes();
+    _insertarNotificacion(userName, familyCode, accion);
+  }
+
+  _insertarNotificacion(String userName, String familyCode, String accion) {
+    String mensaje = "";
+    if (accion == "Modificado") {
+      mensaje = "El rol de " + userName + " fue modificado";
+    } else {
+      mensaje = "Un usuario ha sido eliminado";
+    }
+
+    try {
+      CollectionReference notificaciones =
+          FirebaseFirestore.instance.collection('notificaciones');
+      notificaciones.add({
+        'categoriaNotificacion': 'Roles',
+        'contenidoNotificacion': mensaje,
+        'familyCode': familyCode,
+      });
+    } on FirebaseException catch (e) {
+      _showSnackBarFallo("Error al registrarse");
+    }
   }
 
   _showSnackBarFallo(message) {
@@ -91,165 +114,180 @@ class _RolesState extends State<Roles> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF006064),
-      body: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 110,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 16, right: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        backgroundColor: Color(0xFF006064),
+        body: SingleChildScrollView(
+          physics: ScrollPhysics(),
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 110,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 16, right: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(
-                      "" + this.widget.userNameG + "",
-                      style: GoogleFonts.openSans(
-                          textStyle: TextStyle(
-                              color: Colors.white,
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          "" + this.widget.userNameG + "",
+                          style: GoogleFonts.openSans(
+                              textStyle: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          "Roles",
+                          style: GoogleFonts.openSans(
+                              textStyle: TextStyle(
+                                  color: Color(0xFF0097A7),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600)),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Text(
-                      "Roles",
-                      style: GoogleFonts.openSans(
-                          textStyle: TextStyle(
-                              color: Color(0xFF0097A7),
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600)),
-                    ),
+                    ElevatedButton(
+                        onPressed: () async {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) {
+                            return Login();
+                          }), (Route<dynamic> route) => false);
+                        },
+                        child: Text(
+                          "Cerrar sesión",
+                          style: GoogleFonts.openSans(
+                              textStyle: TextStyle(
+                                  color: Color(0xFFFFFFFF),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600)),
+                        ),
+                        style: ElevatedButton.styleFrom(primary: Colors.red))
                   ],
                 ),
-                ElevatedButton(
-                    onPressed: () async {
-                      Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) {
-                        return Login();
-                      }), (Route<dynamic> route) => false);
-                    },
-                    child: Text(
-                      "Cerrar sesión",
-                      style: GoogleFonts.openSans(
-                          textStyle: TextStyle(
-                              color: Color(0xFFFFFFFF),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600)),
-                    ),
-                    style: ElevatedButton.styleFrom(primary: Colors.red))
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 40,
-          ),
-          //chooseView(existsFamily),
-          ListView.builder(
-              shrinkWrap: true,
-              itemCount: _integrantesList.length,
-              itemBuilder: (context, int index) {
-                return Card(
-                  child: ListTile(
-                      leading: IconButton(
-                          icon: Icon(Icons.edit), // Cada elemento
-                          onPressed: () {
-                            try {
-                              FirebaseFirestore.instance
-                                  .collection('users')
-                                  .where('userName',
-                                      isEqualTo: _integrantesList[index])
-                                  .limit(1)
-                                  .get()
-                                  .then((QuerySnapshot querySnapshot) {
-                                if (querySnapshot.size > 0) {
-                                  //Verificacion de familia
-                                  querySnapshot.docs.forEach((doc) {
-                                    _editIntegranteDialog(
-                                        context,
-                                        _integrantesList[index],
-                                        doc["userFullName"],
-                                        doc["userRol"]);
-                                  });
-                                }
-                              });
-                            } on FirebaseException catch (e) {
-                              print("ERROR" + e.toString());
-                            }
-                            //tiene un botón de editar y borrar al igual que el nombre de la categoría
-                          }),
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_integrantesList[index].toString()),
-                          IconButton(
-                              // Tanto el botón de editar y borrar mostrarán un cuadro de dialogo
-                              icon: Icon(Icons
-                                  .delete), //Que contienen los botones para cancelar o realizar la operación
-                              onPressed: () {
-                                if (_integrantesList[index].toString() ==
-                                    this.widget.userNameG) {
-                                  _showSnackBarFallo(
-                                      "Esta operacion no se puede realizar");
-                                } else {
-                                  try {
-                                    FirebaseFirestore.instance
-                                        .collection('users')
-                                        .where('userName',
-                                            isEqualTo: _integrantesList[index]
-                                                .toString())
-                                        .limit(1)
-                                        .get()
-                                        .then((QuerySnapshot querySnapshot) {
-                                      if (querySnapshot.size > 0) {
-                                        //Verificacion de familia
-                                        querySnapshot.docs.forEach((doc) {
-                                          _deleteIntegranteDialog(
-                                              context, doc.id);
-                                        });
-                                      }
-                                    });
-                                  } on FirebaseException catch (e) {
-                                    print("ERROR" + e.toString());
-                                  }
-                                }
-                              }),
-                        ],
-                      )),
-                );
-              }),
-          Container(
-            padding: EdgeInsets.all(5),
-            height: 80,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              color: Color(0xFF0097A7),
-              elevation: 10,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  ElevatedButton(
-                      onPressed: () async {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    Home(this.widget.userNameG)));
-                      },
-                      child: Icon(Icons.home, color: Colors.black),
-                      style: ElevatedButton.styleFrom(primary: Colors.white)),
-                ],
               ),
-            ),
-          )
-        ],
-      ),
-    );
+              SizedBox(
+                height: 40,
+              ),
+              //chooseView(existsFamily),
+              ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _integrantesList.length,
+                  itemBuilder: (context, int index) {
+                    return Card(
+                      color: Colors.blue,
+                      child: ListTile(
+                          leading: IconButton(
+                              icon: Icon(Icons.edit,
+                                  color: Colors.orange), // Cada elemento
+                              onPressed: () {
+                                try {
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .where('userName',
+                                          isEqualTo: _integrantesList[index])
+                                      .limit(1)
+                                      .get()
+                                      .then((QuerySnapshot querySnapshot) {
+                                    if (querySnapshot.size > 0) {
+                                      //Verificacion de familia
+                                      querySnapshot.docs.forEach((doc) {
+                                        _editIntegranteDialog(
+                                            context,
+                                            _integrantesList[index],
+                                            doc["userFullName"],
+                                            doc["userRol"]);
+                                      });
+                                    }
+                                  });
+                                } on FirebaseException catch (e) {
+                                  print("ERROR" + e.toString());
+                                }
+                                //tiene un botón de editar y borrar al igual que el nombre de la categoría
+                              }),
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _integrantesList[index].toString(),
+                                style: GoogleFonts.openSans(
+                                    textStyle: TextStyle(
+                                        color: Color(0xFFFFFFFF),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                              IconButton(
+                                  // Tanto el botón de editar y borrar mostrarán un cuadro de dialogo
+                                  icon: Icon(Icons.delete,
+                                      color: Colors
+                                          .red), //Que contienen los botones para cancelar o realizar la operación
+                                  onPressed: () {
+                                    if (_integrantesList[index].toString() ==
+                                        this.widget.userNameG) {
+                                      _showSnackBarFallo(
+                                          "Esta operacion no se puede realizar");
+                                    } else {
+                                      try {
+                                        FirebaseFirestore.instance
+                                            .collection('users')
+                                            .where('userName',
+                                                isEqualTo:
+                                                    _integrantesList[index]
+                                                        .toString())
+                                            .limit(1)
+                                            .get()
+                                            .then(
+                                                (QuerySnapshot querySnapshot) {
+                                          if (querySnapshot.size > 0) {
+                                            //Verificacion de familia
+                                            querySnapshot.docs.forEach((doc) {
+                                              _deleteIntegranteDialog(
+                                                  context, doc.id);
+                                            });
+                                          }
+                                        });
+                                      } on FirebaseException catch (e) {
+                                        print("ERROR" + e.toString());
+                                      }
+                                    }
+                                  }),
+                            ],
+                          )),
+                    );
+                  }),
+              Container(
+                padding: EdgeInsets.all(5),
+                height: 80,
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  color: Color(0xFF0097A7),
+                  elevation: 10,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      ElevatedButton(
+                          onPressed: () async {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Home(this.widget.userNameG)));
+                          },
+                          child: Icon(Icons.home, color: Colors.black),
+                          style:
+                              ElevatedButton.styleFrom(primary: Colors.white)),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ));
   }
 
   _editIntegranteDialog(BuildContext context, String userName,
@@ -362,7 +400,8 @@ class _RolesState extends State<Roles> {
                     CollectionReference users =
                         FirebaseFirestore.instance.collection('users');
                     users.doc(userID).delete().then((value) =>
-                        _showSnackBarExito("Eliminado satisfactoriamente"));
+                        _showSnackBarExito("Eliminado satisfactoriamente",
+                            userID, this.widget.familyCodeG, "Eliminado"));
                   } on FirebaseException catch (e) {
                     _showSnackBarFallo("Error verifiquelo");
                   }
@@ -388,8 +427,11 @@ class _RolesState extends State<Roles> {
         'userName': userName,
         'userPassword': userPassword,
         'userRol': userRol
-      }).then((value) =>
-          _showSnackBarExito("Datos modificados Satisfactoriamente"));
+      }).then((value) => _showSnackBarExito(
+          "Datos modificados Satisfactoriamente",
+          userName,
+          familyCode,
+          "Modificado"));
     } on FirebaseException catch (e) {
       _showSnackBarFallo("Error verifiquelo");
     }

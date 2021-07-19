@@ -24,11 +24,30 @@ class _FamilyState extends State<Family> {
   var _familiaCodeJoin = TextEditingController();
   List<DropdownMenuItem> _members =
       List<DropdownMenuItem>.empty(growable: true);
-  _showSnackBarExito(message) {
+
+  _showSnackBarExito(message, String userName, String familyCode) {
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: Colors.green));
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => Family(this.widget.userNameG)));
+
+    if (familyCode != "vacio") {
+      _insertarNotificacion(userName, familyCode);
+    }
+  }
+
+  _insertarNotificacion(String userName, String familyCode) {
+    try {
+      CollectionReference notificaciones =
+          FirebaseFirestore.instance.collection('notificaciones');
+      notificaciones.add({
+        'categoriaNotificacion': 'Familia',
+        'contenidoNotificacion': 'El usuario:' + userName + 'se ha unido.',
+        'familyCode': familyCode,
+      });
+    } on FirebaseException catch (e) {
+      _showSnackBarFallo("Error al registrarse");
+    }
   }
 
   _showSnackBarFallo(message) {
@@ -233,7 +252,7 @@ class _FamilyState extends State<Family> {
           //Verificacion de familia
           querySnapshot.docs.forEach((doc) {
             actualizarUsuario(doc.id, familyCode, doc["userFullName"],
-                doc["userName"], doc["userPassword"],doc["userRol"]);
+                doc["userName"], doc["userPassword"], doc["userRol"]);
           });
         }
       });
@@ -244,7 +263,7 @@ class _FamilyState extends State<Family> {
 
   //Actualiza la familia del usuario
   actualizarUsuario(String userID, String familyCode, String userFullname,
-      String userName, String userPassword,String userRol) {
+      String userName, String userPassword, String userRol) {
     try {
       //FALTAN LAS PRUEBAS PARA LAS VALIDACIONES DE QUE EL CODIGO DE LA FAMILIA SEA CORRECTO
       FirebaseFirestore.instance
@@ -261,9 +280,9 @@ class _FamilyState extends State<Family> {
             'userFullName': userFullname,
             'userName': userName,
             'userPassword': userPassword,
-            'userRol':userRol
-          }).then((value) =>
-              _showSnackBarExito("Familia Asignada Satisfactoriamente"));
+            'userRol': userRol
+          }).then((value) => _showSnackBarExito(
+              "Familia Asignada Satisfactoriamente", userName, familyCode));
         } else {
           _showSnackBarFallo("El codigo ingresado no es valido, verifiquelo.");
         }
@@ -376,7 +395,7 @@ class _FamilyState extends State<Family> {
     try {
       FirebaseFirestore.instance
           .collection('users')
-          .where('familyCode', isEqualTo:sfamilyCode.toString())
+          .where('familyCode', isEqualTo: sfamilyCode.toString())
           .get()
           .then((QuerySnapshot querySnapshot) {
         if (querySnapshot.size > 0) {
