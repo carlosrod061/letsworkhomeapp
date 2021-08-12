@@ -3,18 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'griddashboard.dart';
 import 'login_screen.dart';
 
-
 class Home extends StatefulWidget {
   String userNameG;
-  Home(String username){
-      this.userNameG = username;
+  Home(String username) {
+    this.userNameG = username;
   }
 
   @override
   HomeState createState() => new HomeState();
-
-
-
 }
 
 class HomeState extends State<Home> {
@@ -36,7 +32,7 @@ class HomeState extends State<Home> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      ""+this.widget.userNameG+"",
+                      "" + this.widget.userNameG + "",
                       style: GoogleFonts.openSans(
                           textStyle: TextStyle(
                               color: Colors.white,
@@ -56,31 +52,29 @@ class HomeState extends State<Home> {
                     ),
                   ],
                 ),
-                 ElevatedButton(
-                      onPressed: () async {
-                          Navigator.of(context).pushAndRemoveUntil(
-                             MaterialPageRoute(builder: (context){
-                              return Login();
-                             }), 
-                          (Route<dynamic> route) => false);
-                      },
-                      child: Text(
-                        "Cerrar sesión",
-                        style: GoogleFonts.openSans(
-                            textStyle: TextStyle(
-                                color: Color(0xFFFFFFFF),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600)),
-                      ),
-                      style: ElevatedButton.styleFrom(primary: Colors.red))
+                ElevatedButton(
+                    onPressed: () async {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) {
+                        return Login();
+                      }), (Route<dynamic> route) => false);
+                    },
+                    child: Text(
+                      "Cerrar sesión",
+                      style: GoogleFonts.openSans(
+                          textStyle: TextStyle(
+                              color: Color(0xFFFFFFFF),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600)),
+                    ),
+                    style: ElevatedButton.styleFrom(primary: Colors.red))
               ],
             ),
           ),
           SizedBox(
             height: 40,
           ),
-         GridDashboard(this.widget.userNameG),
-         
+          GridDashboard(this.widget.userNameG),
         ],
       ),
     );
