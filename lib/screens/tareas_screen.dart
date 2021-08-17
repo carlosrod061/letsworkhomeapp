@@ -232,6 +232,7 @@ class _TareasState extends State<Tareas> {
               ),
               //chooseView(existsFamily),
               ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: _tareasList.length,
                   itemBuilder: (context, int index) {

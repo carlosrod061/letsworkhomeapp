@@ -135,6 +135,7 @@ class _NotificacionesState extends State<Notificaciones> {
               ),
               //chooseView(existsFamily),
               ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: _notificacionesList.length,
                   itemBuilder: (context, int index) {
